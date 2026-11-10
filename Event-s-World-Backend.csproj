@@ -11,4 +11,19 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="tests\" />
+    <Folder Include="src\Modules\" />
+    <Folder Include="src\Shared\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\mateo\Documents\Personal-Projects\Events-World\Event-s-World-Backend\.editorconfig" />
+    <None Include="src\bootstrapper\eventsworld.api\EventsWorld.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\mateo\Documents\Personal-Projects\Events-World\Event-s-World-Backend\.editorconfig" />
+  </ItemGroup>
+
 </Project>

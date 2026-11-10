@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Bootstrapper/">
+    <Project Path="src/Bootstrapper/EventsWorld.Api/EventsWorld.Api.csproj" />
+  </Folder>
+</Solution>

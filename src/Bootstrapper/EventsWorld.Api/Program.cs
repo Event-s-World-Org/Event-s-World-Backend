@@ -2,7 +2,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -16,8 +15,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
-app.MapControllers();
+app.MapGet("/health", () => Results.Ok(new { status = "Healthy", timestamp = System.DateTimeOffset.UtcNow }));
 
 app.Run();
+public partial class Program { }
