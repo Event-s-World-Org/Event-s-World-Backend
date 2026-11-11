@@ -8,5 +8,17 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.*" />
 	</ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Shared\EventsWorld.Shared.Infrastructure\EventsWorld.Shared.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\Modules\Accounts\EventsWorld.Modules.Accounts\EventsWorld.Modules.Accounts.csproj" />
+        <ProjectReference Include="..\..\Modules\Audit\EventsWorld.Modules.Audit\EventsWorld.Modules.Audit.csproj" />
+        <ProjectReference Include="..\..\Modules\Events\EventsWorld.Modules.Events\EventsWorld.Modules.Events.csproj" />
+        <ProjectReference Include="..\..\Modules\Files\EventsWorld.Modules.Files\EventsWorld.Modules.Files.csproj" />
+        <ProjectReference Include="..\..\Modules\Legal\EventsWorld.Modules.Legal\EventsWorld.Modules.Legal.csproj" />
+        <ProjectReference Include="..\..\Modules\Notifications\EventsWorld.Modules.Notifications\EventsWorld.Modules.Notifications.csproj" />
+        <ProjectReference Include="..\..\Modules\Payments\EventsWorld.Modules.Payments\EventsWorld.Modules.Payments.csproj" />
+        <ProjectReference Include="..\..\Modules\Registrations\EventsWorld.Modules.Registrations\EventsWorld.Modules.Registrations.csproj" />
+    </ItemGroup>
 	
 </Project>

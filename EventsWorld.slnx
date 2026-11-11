@@ -40,4 +40,9 @@
     <Project Path="src/Shared/EventsWorld.Shared.Infrastructure/EventsWorld.Shared.Infrastructure.csproj" />
     <Project Path="src/Shared/EventsWorld.Shared.Kernel/EventsWorld.Shared.Kernel.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EventsWorld.ArchitectureTests/EventsWorld.ArchitectureTests.csproj" />
+    <Project Path="tests/EventsWorld.IntegrationTests/EventsWorld.IntegrationTests.csproj" />
+    <Project Path="tests/EventsWorld.UnitTests/EventsWorld.UnitTests.csproj" />
+  </Folder>
 </Solution>
