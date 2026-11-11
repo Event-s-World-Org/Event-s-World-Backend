@@ -17,3 +17,6 @@ csharp_style_namespace_declarations = file_scoped:suggestion
 
 # namespace use
 dotnet_sort_system_directives_first = true
+
+# The project is only with C#
+dotnet_diagnostic.CA1716.severity = none

@@ -3,4 +3,8 @@
   <Folder Name="/src/Bootstrapper/">
     <Project Path="src/Bootstrapper/EventsWorld.Api/EventsWorld.Api.csproj" />
   </Folder>
+  <Folder Name="/src/Shared/">
+    <Project Path="src/Shared/EventsWorld.Shared.Infrastructure/EventsWorld.Shared.Infrastructure.csproj" />
+    <Project Path="src/Shared/EventsWorld.Shared.Kernel/EventsWorld.Shared.Kernel.csproj" />
+  </Folder>
 </Solution>
