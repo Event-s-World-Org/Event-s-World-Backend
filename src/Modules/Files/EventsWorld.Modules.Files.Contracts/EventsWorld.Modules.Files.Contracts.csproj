@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>EventsWorld.Modules.Files.Contracts</RootNamespace>
+    <AssemblyName>EventsWorld.Modules.Files.Contracts</AssemblyName>
+  </PropertyGroup>
+
+</Project>

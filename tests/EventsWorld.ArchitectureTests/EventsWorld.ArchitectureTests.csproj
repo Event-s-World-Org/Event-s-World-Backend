@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="NetArchTest.Rules" Version="1.3.2" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Bootstrapper\EventsWorld.Api\EventsWorld.Api.csproj" />
+    <ProjectReference Include="..\..\src\Shared\EventsWorld.Shared.Kernel\EventsWorld.Shared.Kernel.csproj" />
+    <ProjectReference Include="..\..\src\Shared\EventsWorld.Shared.Infrastructure\EventsWorld.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Accounts\EventsWorld.Modules.Accounts\EventsWorld.Modules.Accounts.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Accounts\EventsWorld.Modules.Accounts.Contracts\EventsWorld.Modules.Accounts.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Events\EventsWorld.Modules.Events\EventsWorld.Modules.Events.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Events\EventsWorld.Modules.Events.Contracts\EventsWorld.Modules.Events.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Registrations\EventsWorld.Modules.Registrations\EventsWorld.Modules.Registrations.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Registrations\EventsWorld.Modules.Registrations.Contracts\EventsWorld.Modules.Registrations.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Payments\EventsWorld.Modules.Payments\EventsWorld.Modules.Payments.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Payments\EventsWorld.Modules.Payments.Contracts\EventsWorld.Modules.Payments.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Files\EventsWorld.Modules.Files\EventsWorld.Modules.Files.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Files\EventsWorld.Modules.Files.Contracts\EventsWorld.Modules.Files.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Notifications\EventsWorld.Modules.Notifications\EventsWorld.Modules.Notifications.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Notifications\EventsWorld.Modules.Notifications.Contracts\EventsWorld.Modules.Notifications.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Audit\EventsWorld.Modules.Audit\EventsWorld.Modules.Audit.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Audit\EventsWorld.Modules.Audit.Contracts\EventsWorld.Modules.Audit.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Legal\EventsWorld.Modules.Legal\EventsWorld.Modules.Legal.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Legal\EventsWorld.Modules.Legal.Contracts\EventsWorld.Modules.Legal.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

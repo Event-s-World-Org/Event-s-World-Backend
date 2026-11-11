@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>EventsWorld.Modules.Events</RootNamespace>
+    <AssemblyName>EventsWorld.Modules.Events</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EventsWorld.Modules.Events.Contracts\EventsWorld.Modules.Events.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Shared\EventsWorld.Shared.Infrastructure\EventsWorld.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Shared\EventsWorld.Shared.Kernel\EventsWorld.Shared.Kernel.csproj" />
+  </ItemGroup>
+
+</Project>

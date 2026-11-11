@@ -1,0 +1,74 @@
+# Filepath: .gitignore
+# Acción: Crear archivo nuevo en la raíz del repositorio
+
+## ----------------------------------------------------------------------
+## Compilación y Artefactos de .NET / MSBuild
+## ----------------------------------------------------------------------
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+Generated\ Files/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+## ----------------------------------------------------------------------
+## Visual Studio
+## ----------------------------------------------------------------------
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
+*.dbmdl
+*.jsproj.user
+
+## ----------------------------------------------------------------------
+## Entornos de Pruebas y Cobertura de Código
+## ----------------------------------------------------------------------
+TestResults/
+[Tt]est[Rr]esult*/
+coverage.opencover.xml
+coverage.cobertura.xml
+*.coverage
+*.coveragexml
+
+## ----------------------------------------------------------------------
+## Configuraciones Locales y Secretos
+## ----------------------------------------------------------------------
+# Excluir configuración local con contraseñas o connection strings privadas
+# (descomenta la siguiente línea si usas appsettings locales con secretos):
+# appsettings.Local.json
+*.local.json
+
+## ----------------------------------------------------------------------
+## Visual Studio Code & JetBrains Rider
+## ----------------------------------------------------------------------
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.sln.iml
+
+## ----------------------------------------------------------------------
+## Paquetes NuGet y Caché de Restauración
+## ----------------------------------------------------------------------
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+project.lock.json
+project.assets.json
+
+## ----------------------------------------------------------------------
+## Sistema Operativo (Windows / macOS / Linux)
+## ----------------------------------------------------------------------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
