@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>EventsWorld.Modules.Notifications</RootNamespace>
+    <AssemblyName>EventsWorld.Modules.Notifications</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EventsWorld.Modules.Notifications.Contracts\EventsWorld.Modules.Notifications.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Shared\EventsWorld.Shared.Infrastructure\EventsWorld.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Shared\EventsWorld.Shared.Kernel\EventsWorld.Shared.Kernel.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -3,6 +3,39 @@
   <Folder Name="/src/Bootstrapper/">
     <Project Path="src/Bootstrapper/EventsWorld.Api/EventsWorld.Api.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Accounts/">
+    <Project Path="src/Modules/Accounts/EventsWorld.Modules.Accounts.Contracts/EventsWorld.Modules.Accounts.Contracts.csproj" />
+    <Project Path="src/Modules/Accounts/EventsWorld.Modules.Accounts/EventsWorld.Modules.Accounts.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Audit/">
+    <Project Path="src/Modules/Audit/EventsWorld.Modules.Audit.Contracts/EventsWorld.Modules.Audit.Contracts.csproj" />
+    <Project Path="src/Modules/Audit/EventsWorld.Modules.Audit/EventsWorld.Modules.Audit.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Events/">
+    <Project Path="src/Modules/Events/EventsWorld.Modules.Events.Contracts/EventsWorld.Modules.Events.Contracts.csproj" />
+    <Project Path="src/Modules/Events/EventsWorld.Modules.Events/EventsWorld.Modules.Events.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Files/">
+    <Project Path="src/Modules/Files/EventsWorld.Modules.Files.Contracts/EventsWorld.Modules.Files.Contracts.csproj" />
+    <Project Path="src/Modules/Files/EventsWorld.Modules.Files/EventsWorld.Modules.Files.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Legal/">
+    <Project Path="src/Modules/Legal/EventsWorld.Modules.Legal.Contracts/EventsWorld.Modules.Legal.Contracts.csproj" />
+    <Project Path="src/Modules/Legal/EventsWorld.Modules.Legal/EventsWorld.Modules.Legal.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Notifications/">
+    <Project Path="src/Modules/Notifications/EventsWorld.Modules.Notifications.Contracts/EventsWorld.Modules.Notifications.Contracts.csproj" />
+    <Project Path="src/Modules/Notifications/EventsWorld.Modules.Notifications/EventsWorld.Modules.Notifications.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Payments/">
+    <Project Path="src/Modules/Payments/EventsWorld.Modules.Payments.Contracts/EventsWorld.Modules.Payments.Contracts.csproj" />
+    <Project Path="src/Modules/Payments/EventsWorld.Modules.Payments/EventsWorld.Modules.Payments.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Registrations/">
+    <Project Path="src/Modules/Registrations/EventsWorld.Modules.Registrations.Contracts/EventsWorld.Modules.Registrations.Contracts.csproj" />
+    <Project Path="src/Modules/Registrations/EventsWorld.Modules.Registrations/EventsWorld.Modules.Registrations.csproj" />
+  </Folder>
   <Folder Name="/src/Shared/">
     <Project Path="src/Shared/EventsWorld.Shared.Infrastructure/EventsWorld.Shared.Infrastructure.csproj" />
     <Project Path="src/Shared/EventsWorld.Shared.Kernel/EventsWorld.Shared.Kernel.csproj" />

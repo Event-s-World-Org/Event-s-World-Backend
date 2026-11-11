@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>EventsWorld.Modules.Legal</RootNamespace>
+    <AssemblyName>EventsWorld.Modules.Legal</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EventsWorld.Modules.Legal.Contracts\EventsWorld.Modules.Legal.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Shared\EventsWorld.Shared.Infrastructure\EventsWorld.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Shared\EventsWorld.Shared.Kernel\EventsWorld.Shared.Kernel.csproj" />
+  </ItemGroup>
+
+</Project>

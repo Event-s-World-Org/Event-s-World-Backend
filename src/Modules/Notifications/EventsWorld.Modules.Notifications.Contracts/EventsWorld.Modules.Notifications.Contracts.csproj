@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>EventsWorld.Modules.Notifications.Contracts</RootNamespace>
+    <AssemblyName>EventsWorld.Modules.Notifications.Contracts</AssemblyName>
+  </PropertyGroup>
+
+</Project>

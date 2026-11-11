@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>EventsWorld.Modules.Audit.Contracts</RootNamespace>
+    <AssemblyName>EventsWorld.Modules.Audit.Contracts</AssemblyName>
+  </PropertyGroup>
+
+</Project>
