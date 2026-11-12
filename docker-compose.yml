@@ -1,0 +1,30 @@
+# Local PostgreSQL that behaves like the Supabase database (TS-003).
+# 1. Copy .env.example to .env and choose passwords.
+# 2. docker compose up -d
+# 3. dotnet run --project src/Bootstrapper/EventsWorld.Api -- migrate   (see README)
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: eventsworld-db
+    environment:
+      POSTGRES_DB: eventsworld
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      EW_MIGRATOR_PASSWORD: ${EW_MIGRATOR_PASSWORD:?Set EW_MIGRATOR_PASSWORD in .env}
+      EW_APP_PASSWORD: ${EW_APP_PASSWORD:?Set EW_APP_PASSWORD in .env}
+    ports:
+      - "${EW_DB_PORT:-5432}:5432"
+    volumes:
+      - eventsworld-db:/var/lib/postgresql/data
+      # Run in name order on the first start of an empty volume.
+      - ./db/local/00-supabase-emulation.sql:/docker-entrypoint-initdb.d/00-supabase-emulation.sql:ro
+      - ./db/bootstrap/roles-and-privileges.sql:/docker-entrypoint-initdb.d/01-roles-and-privileges.sql:ro
+      - ./db/local/02-local-passwords.sh:/docker-entrypoint-initdb.d/02-local-passwords.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d eventsworld"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  eventsworld-db:
