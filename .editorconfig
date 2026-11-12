@@ -18,5 +18,5 @@ csharp_style_namespace_declarations = file_scoped:suggestion
 # namespace use
 dotnet_sort_system_directives_first = true
 
-# The project is only with C#
+# Namespace segments such as "Shared" are VB keywords (CA1716); the solution is C# only.
 dotnet_diagnostic.CA1716.severity = none
