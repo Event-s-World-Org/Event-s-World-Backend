@@ -1,3 +1,5 @@
+using EventsWorld.Modules.Audit.Infrastructure.Persistence;
+using EventsWorld.Shared.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +13,8 @@ public static class AuditModule
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
+
+        services.AddModuleDbContext<AuditDbContext>(AuditDbContext.Schema);
 
         return services;
     }

@@ -1,13 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-	
-	<PropertyGroup>
-		<RootNamespace>EventsWorld.Api</RootNamespace>
-		<AssemblyName>EventsWorld.Api</AssemblyName>
-	</PropertyGroup>
-	
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-	</ItemGroup>
+
+    <PropertyGroup>
+        <RootNamespace>EventsWorld.Api</RootNamespace>
+        <AssemblyName>EventsWorld.Api</AssemblyName>
+        <!-- Local connection strings: dotnet user-secrets (see README). -->
+        <UserSecretsId>eventsworld-api</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+        <!-- Design-time only: lets `dotnet ef` create the module DbContexts from this host. -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\Shared\EventsWorld.Shared.Infrastructure\EventsWorld.Shared.Infrastructure.csproj" />
@@ -20,5 +27,5 @@
         <ProjectReference Include="..\..\Modules\Payments\EventsWorld.Modules.Payments\EventsWorld.Modules.Payments.csproj" />
         <ProjectReference Include="..\..\Modules\Registrations\EventsWorld.Modules.Registrations\EventsWorld.Modules.Registrations.csproj" />
     </ItemGroup>
-	
+
 </Project>

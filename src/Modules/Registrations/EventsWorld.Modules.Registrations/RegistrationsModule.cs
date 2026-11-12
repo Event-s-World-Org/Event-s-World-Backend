@@ -1,3 +1,5 @@
+using EventsWorld.Modules.Registrations.Infrastructure.Persistence;
+using EventsWorld.Shared.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +13,8 @@ public static class RegistrationsModule
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
+
+        services.AddModuleDbContext<RegistrationsDbContext>(RegistrationsDbContext.Schema);
 
         return services;
     }

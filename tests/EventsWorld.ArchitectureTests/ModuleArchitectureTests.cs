@@ -171,6 +171,9 @@ public sealed class ModuleArchitectureTests
                 .DoNotResideInNamespace($"EventsWorld.Modules.{module}.Contracts")
                 .And()
                 .DoNotHaveName($"{module}Module")
+                // EF Core generates migrations as public classes; they are not a module API.
+                .And()
+                .DoNotResideInNamespace($"EventsWorld.Modules.{module}.Infrastructure.Persistence.Migrations")
                 .Should()
                 .NotBePublic()
                 .GetResult();

@@ -1,3 +1,5 @@
+using EventsWorld.Modules.Legal.Infrastructure.Persistence;
+using EventsWorld.Shared.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +13,8 @@ public static class LegalModule
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
+
+        services.AddModuleDbContext<LegalDbContext>(LegalDbContext.Schema);
 
         return services;
     }

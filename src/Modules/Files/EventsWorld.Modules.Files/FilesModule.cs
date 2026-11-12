@@ -1,3 +1,5 @@
+using EventsWorld.Modules.Files.Infrastructure.Persistence;
+using EventsWorld.Shared.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +13,8 @@ public static class FilesModule
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
+
+        services.AddModuleDbContext<FilesDbContext>(FilesDbContext.Schema);
 
         return services;
     }

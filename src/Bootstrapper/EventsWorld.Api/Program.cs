@@ -6,6 +6,7 @@ using EventsWorld.Modules.Legal;
 using EventsWorld.Modules.Notifications;
 using EventsWorld.Modules.Payments;
 using EventsWorld.Modules.Registrations;
+using EventsWorld.Shared.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,18 @@ builder.Services
 
 var app = builder.Build();
 
+// `migrate` applies every module's migrations as ew_migrator and exits (database.md §6).
+// The deployment pipeline runs it before starting the new API version.
+if (args.Length > 0 && args[0] == "migrate")
+{
+    var migrationsConnection = builder.Configuration.GetConnectionString(ConnectionStringNames.Migrations)
+        ?? throw new InvalidOperationException(
+            $"Set ConnectionStrings:{ConnectionStringNames.Migrations} to run the migrations.");
+
+    await app.Services.MigrateModuleDatabasesAsync(migrationsConnection);
+    return;
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -36,5 +49,6 @@ app.UseHttpsRedirection();
 
 app.MapGet("/health", () => Results.Ok(new { status = "Healthy", timestamp = System.DateTimeOffset.UtcNow }));
 
-app.Run();
+await app.RunAsync();
+
 public partial class Program { }
