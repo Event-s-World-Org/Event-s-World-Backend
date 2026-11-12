@@ -87,20 +87,38 @@ Available endpoints on startup (`http://localhost:5037`):
 
 ---
 
-## Request Pipeline (TS-004)
+## Configuration per Environment
 
-Shared by every endpoint (`Docs/architecture/backend.md` §3–5):
+Set these in each environment (environment variables use `__`, e.g. `Cors__AllowedOrigins__0`):
 
-* **Errors:** RFC 9457 ProblemDetails (`application/problem+json`) with a stable `code` (`module.snake_case`, e.g. `registrations.capacity_full`) and a `correlationId`. Exceptions, malformed bodies, validation, rate limiting, `Result` errors and empty 4xx/5xx responses all use it. Exception messages and stack traces never reach the response.
-* **Correlation ID:** the `X-Correlation-ID` request header is reused when it is safe (letters, digits and hyphens, up to 64 characters); otherwise a new one is created. It is returned in the response and added to every log line.
-* **Logging:** Serilog to the console. Levels are set in the `Serilog` section of `appsettings.json`. Emails, tokens and personal data are redacted by property name (`Email`, `Token`, `Phone`, `FullName`, `Document`…) or with `[SensitiveData]`, and the final text is masked again.
-* **Validation:** FluentValidation for the request shape, with `.WithRequestValidation<TRequest>()` on the endpoint. Validators are found in the host and in every module assembly.
-* **Endpoints:** each module implements `IApiEndpoints` (`Shared.Infrastructure/Api`) and registers it with `services.AddSingleton<IApiEndpoints, XEndpoints>()`; the host maps it into the route groups. Business errors return `error.ToProblem()`.
-* **Rate limiting:** per client IP on `/public` and `/participant` (`RateLimiting:AnonymousPermitLimit` per `RateLimiting:AnonymousWindowSeconds`, 60 per minute by default). Exceeding it returns 429 with `Retry-After`.
-* **Proxy:** in production, list the hosting proxy in `ForwardedHeaders:KnownProxies` (IPs) or `ForwardedHeaders:KnownNetworks` (CIDR). Only then is `X-Forwarded-For` used for the client IP; otherwise every client would share the proxy's limit.
-* **CORS:** only the origins in `Cors:AllowedOrigins` (`http://localhost:4200` in development; set the staging and production origins in their environments). No credentials; `ETag`, `Location`, `Retry-After` and `X-Correlation-ID` are exposed to the frontend.
-* **Security headers:** `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, and HSTS outside development.
-* **Telemetry:** OpenTelemetry traces and metrics for ASP.NET Core and `HttpClient` (service `EventsWorld.Api`); the exporter is configured later. `TimeProvider` is registered for testable time.
+| Key | Default | Set it to |
+|---|---|---|
+| `Cors:AllowedOrigins` | none (`http://localhost:4200` in development) | The frontend origins of the environment. Without them, browsers cannot call the API. |
+| `ForwardedHeaders:KnownProxies` / `ForwardedHeaders:KnownNetworks` | none | The IPs (or CIDR ranges) of the hosting proxy. Without them, every client shares the proxy's IP and therefore the same rate limit. |
+| `RateLimiting:AnonymousPermitLimit` / `RateLimiting:AnonymousWindowSeconds` | 60 requests / 60 s | The per-IP limit on `/api/v1/public` and `/api/v1/participant`. Exceeding it returns 429 with `Retry-After`. |
+| `Serilog:MinimumLevel` | `Information` (`Warning` for ASP.NET Core and EF Core) | The log levels. |
+
+---
+
+## Adding Endpoints to a Module
+
+1. Implement `IApiEndpoints` (`Shared.Infrastructure/Api`) and map the routes into the groups it receives (`Public`, `Participant`, `Me`, `Event`, `Admin`, or `V1` for routes outside them):
+
+   ```csharp
+   internal sealed class EventsEndpoints : IApiEndpoints
+   {
+       public void MapEndpoints(ApiGroups groups)
+       {
+           groups.Me.MapGet("/events", GetMyEvents);
+           groups.V1.MapPost("/events", CreateEvent).WithRequestValidation<CreateEventRequest>();
+       }
+   }
+   ```
+
+2. Register it in the module's `Add<Module>Module`: `services.AddSingleton<IApiEndpoints, EventsEndpoints>();`.
+3. Validate the request shape with a FluentValidation `AbstractValidator<T>` in the module and `.WithRequestValidation<T>()` on the endpoint. Validators are registered automatically.
+4. Return business errors with `result.ToProblem()` or `error.ToProblem()`. The response is a ProblemDetails with the error `code`, the HTTP status of its `ErrorType` and a `correlationId`.
+5. Mark properties that hold personal data with `[SensitiveData]` when their name does not reveal it (names containing `Email`, `Token`, `Password`, `Phone`, `FullName`, `Document`… are already redacted from logs).
 
 ---
 
