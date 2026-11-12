@@ -1,37 +1,40 @@
-using EventsWorld.Shared.Kernel.Logging;
+using EventsWorld.Shared.Infrastructure.Logging;
 using Serilog.Core;
 using Serilog.Events;
 
 namespace EventsWorld.Api.Logging;
 
+/// <summary>
+/// For message properties such as <c>{Email}</c>: sensitive names are redacted and other text
+/// values are masked.
+/// </summary>
 public sealed class SensitiveDataMaskingEnricher : ILogEventEnricher
 {
     public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
     {
-        var propertiesToUpdate = new List<KeyValuePair<string, LogEventPropertyValue>>();
+        ArgumentNullException.ThrowIfNull(logEvent);
 
-        foreach (var (key, value) in logEvent.Properties)
+        var updates = new List<LogEventProperty>();
+
+        foreach (var (name, value) in logEvent.Properties)
         {
-            if (SensitiveDataMasker.IsSensitivePropertyName(key))
+            if (SensitiveDataMasker.IsSensitivePropertyName(name))
             {
-                var masked = key.Contains("Email", StringComparison.OrdinalIgnoreCase)
-                    ? SensitiveDataMasker.RedactedEmail
-                    : SensitiveDataMasker.RedactedToken;
-                propertiesToUpdate.Add(new KeyValuePair<string, LogEventPropertyValue>(key, new ScalarValue(masked)));
+                updates.Add(new LogEventProperty(name, new ScalarValue(SensitiveDataMasker.RedactedValueFor(name))));
             }
-            else if (value is ScalarValue { Value: string strVal })
+            else if (value is ScalarValue { Value: string text })
             {
-                var masked = SensitiveDataMasker.Mask(strVal);
-                if (!string.Equals(masked, strVal, StringComparison.Ordinal))
+                var masked = SensitiveDataMasker.Mask(text);
+                if (!string.Equals(masked, text, StringComparison.Ordinal))
                 {
-                    propertiesToUpdate.Add(new KeyValuePair<string, LogEventPropertyValue>(key, new ScalarValue(masked)));
+                    updates.Add(new LogEventProperty(name, new ScalarValue(masked)));
                 }
             }
         }
 
-        foreach (var (key, value) in propertiesToUpdate)
+        foreach (var property in updates)
         {
-            logEvent.AddOrUpdateProperty(new LogEventProperty(key, value));
+            logEvent.AddOrUpdateProperty(property);
         }
     }
 }

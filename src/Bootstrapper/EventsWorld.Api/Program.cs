@@ -1,25 +1,36 @@
+using System.Reflection;
 using EventsWorld.Api.Endpoints;
 using EventsWorld.Api.Extensions;
 using EventsWorld.Api.Logging;
-using EventsWorld.Modules.Accounts.Api;
-using EventsWorld.Modules.Audit.Api;
-using EventsWorld.Modules.Events.Api;
-using EventsWorld.Modules.Files.Api;
-using EventsWorld.Modules.Legal.Api;
-using EventsWorld.Modules.Notifications.Api;
-using EventsWorld.Modules.Payments.Api;
-using EventsWorld.Modules.Registrations.Api;
+using EventsWorld.Modules.Accounts;
+using EventsWorld.Modules.Audit;
+using EventsWorld.Modules.Events;
+using EventsWorld.Modules.Files;
+using EventsWorld.Modules.Legal;
+using EventsWorld.Modules.Notifications;
+using EventsWorld.Modules.Payments;
+using EventsWorld.Modules.Registrations;
+using EventsWorld.Shared.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog with structured console logging and sensitive data masking
 builder.ConfigureSerilog();
 
-// Configure cross-cutting API concerns: RFC 9457 errors, CORS, rate limiting, health checks, OpenTelemetry, TimeProvider
-builder.Services.AddOpenApi();
-builder.Services.AddApiCrossCuttingConcerns(builder.Configuration);
+Assembly[] moduleAssemblies =
+[
+    typeof(AccountsModule).Assembly,
+    typeof(EventsModule).Assembly,
+    typeof(RegistrationsModule).Assembly,
+    typeof(PaymentsModule).Assembly,
+    typeof(FilesModule).Assembly,
+    typeof(NotificationsModule).Assembly,
+    typeof(AuditModule).Assembly,
+    typeof(LegalModule).Assembly,
+];
 
-// Register modules
+// RFC 9457 errors, validation, CORS, rate limiting, health checks, OpenAPI, OpenTelemetry, TimeProvider (TS-004).
+builder.Services.AddApiCrossCuttingConcerns(builder.Configuration, [typeof(Program).Assembly, .. moduleAssemblies]);
+
 builder.Services
     .AddAccountsModule(builder.Configuration)
     .AddEventsModule(builder.Configuration)
@@ -32,14 +43,23 @@ builder.Services
 
 var app = builder.Build();
 
-// Use cross-cutting request pipeline: Correlation ID, security headers, exception handling, Scalar UI, CORS, rate limiting, health checks
+// `migrate` applies every module's migrations as ew_migrator and exits (database.md §6).
+// The deployment pipeline runs it before starting the new API version.
+if (args.Length > 0 && args[0] == "migrate")
+{
+    var migrationsConnection = builder.Configuration.GetConnectionString(ConnectionStringNames.Migrations)
+        ?? throw new InvalidOperationException(
+            $"Set ConnectionStrings:{ConnectionStringNames.Migrations} to run the migrations.");
+
+    await app.Services.MigrateModuleDatabasesAsync(migrationsConnection);
+    return;
+}
+
 app.UseApiCrossCuttingConcerns();
 
-app.UseHttpsRedirection();
-
-// Register v1 route groups (/api/v1/public, /participant, /me, /events/{eventId}, /admin)
+// /api/v1/public, /participant, /me, /events/{eventId}, /admin and every module's endpoints.
 app.MapApiV1();
 
-app.Run();
+await app.RunAsync();
 
 public partial class Program { }
