@@ -128,6 +128,33 @@ public sealed class ModuleArchitectureTests
         Assert.True(violations.Count == 0, string.Join(Environment.NewLine, violations));
     }
 
+    /// <summary>Api → Application → Domain ← Infrastructure (backend.md §1, ADR-0003 §7).</summary>
+    [Fact]
+    public void Layers_Should_FollowTheDependencyRule()
+    {
+        var violations = new List<string>();
+
+        foreach (var module in Modules)
+        {
+            var moduleAssembly = Assembly.Load($"EventsWorld.Modules.{module}");
+            var root = $"EventsWorld.Modules.{module}";
+
+            CheckLayer(
+                moduleAssembly,
+                $"{root}.Domain",
+                [$"{root}.Application", $"{root}.Infrastructure", $"{root}.Api", "EventsWorld.Shared.Infrastructure"],
+                violations);
+
+            CheckLayer(
+                moduleAssembly,
+                $"{root}.Application",
+                [$"{root}.Infrastructure", $"{root}.Api"],
+                violations);
+        }
+
+        Assert.True(violations.Count == 0, string.Join(Environment.NewLine, violations));
+    }
+
     [Fact]
     public void ModuleTypes_Should_BeInternal_UnlessInApiOrContracts()
     {
@@ -142,6 +169,8 @@ public sealed class ModuleArchitectureTests
                 .DoNotResideInNamespace($"EventsWorld.Modules.{module}.Api")
                 .And()
                 .DoNotResideInNamespace($"EventsWorld.Modules.{module}.Contracts")
+                .And()
+                .DoNotHaveName($"{module}Module")
                 .Should()
                 .NotBePublic()
                 .GetResult();
@@ -175,7 +204,8 @@ public sealed class ModuleArchitectureTests
             Assert.Contains(moduleAssemblyName, referencedAssemblies);
 
             var moduleAssembly = Assembly.Load(moduleAssemblyName);
-            var moduleType = moduleAssembly.GetType($"EventsWorld.Modules.{module}.Api.{module}Module");
+            // The module's composition root lives at the project root (backend.md §1).
+            var moduleType = moduleAssembly.GetType($"EventsWorld.Modules.{module}.{module}Module");
 
             Assert.NotNull(moduleType);
             Assert.True(moduleType.IsPublic && moduleType.IsAbstract && moduleType.IsSealed, $"{moduleType.FullName} must be public static.");
@@ -189,6 +219,26 @@ public sealed class ModuleArchitectureTests
             Assert.Equal("Microsoft.Extensions.Configuration.IConfiguration", parameters[1].ParameterType.FullName);
 
             Assert.Contains($".Add{module}Module(", programContent, StringComparison.Ordinal);
+        }
+    }
+
+    private static void CheckLayer(
+        Assembly moduleAssembly,
+        string layerNamespace,
+        string[] forbiddenNamespaces,
+        List<string> violations)
+    {
+        var result = Types.InAssembly(moduleAssembly)
+            .That()
+            .ResideInNamespace(layerNamespace)
+            .ShouldNot()
+            .HaveDependencyOnAny(forbiddenNamespaces)
+            .GetResult();
+
+        if (!result.IsSuccessful)
+        {
+            var failing = string.Join(", ", result.FailingTypeNames ?? Array.Empty<string>());
+            violations.Add($"'{layerNamespace}' must not depend on {string.Join(", ", forbiddenNamespaces)}: {failing}");
         }
     }
 

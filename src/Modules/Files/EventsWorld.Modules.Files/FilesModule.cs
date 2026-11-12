@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EventsWorld.Modules.Events.Api;
+namespace EventsWorld.Modules.Files;
 
-public static class EventsModule
+public static class FilesModule
 {
-    public static IServiceCollection AddEventsModule(
+    public static IServiceCollection AddFilesModule(
         this IServiceCollection services,
         IConfiguration configuration)
     {

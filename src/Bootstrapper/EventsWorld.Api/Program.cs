@@ -1,11 +1,11 @@
-using EventsWorld.Modules.Accounts.Api;
-using EventsWorld.Modules.Audit.Api;
-using EventsWorld.Modules.Events.Api;
-using EventsWorld.Modules.Files.Api;
-using EventsWorld.Modules.Legal.Api;
-using EventsWorld.Modules.Notifications.Api;
-using EventsWorld.Modules.Payments.Api;
-using EventsWorld.Modules.Registrations.Api;
+using EventsWorld.Modules.Accounts;
+using EventsWorld.Modules.Audit;
+using EventsWorld.Modules.Events;
+using EventsWorld.Modules.Files;
+using EventsWorld.Modules.Legal;
+using EventsWorld.Modules.Notifications;
+using EventsWorld.Modules.Payments;
+using EventsWorld.Modules.Registrations;
 
 var builder = WebApplication.CreateBuilder(args);
 

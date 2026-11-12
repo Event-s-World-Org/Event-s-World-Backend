@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EventsWorld.Modules.Audit.Api;
+namespace EventsWorld.Modules.Notifications;
 
-public static class AuditModule
+public static class NotificationsModule
 {
-    public static IServiceCollection AddAuditModule(
+    public static IServiceCollection AddNotificationsModule(
         this IServiceCollection services,
         IConfiguration configuration)
     {

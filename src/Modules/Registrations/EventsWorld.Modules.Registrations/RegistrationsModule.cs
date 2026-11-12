@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EventsWorld.Modules.Notifications.Api;
+namespace EventsWorld.Modules.Registrations;
 
-public static class NotificationsModule
+public static class RegistrationsModule
 {
-    public static IServiceCollection AddNotificationsModule(
+    public static IServiceCollection AddRegistrationsModule(
         this IServiceCollection services,
         IConfiguration configuration)
     {

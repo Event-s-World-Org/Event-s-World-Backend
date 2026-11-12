@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EventsWorld.Modules.Payments.Api;
+namespace EventsWorld.Modules.Payments;
 
 public static class PaymentsModule
 {

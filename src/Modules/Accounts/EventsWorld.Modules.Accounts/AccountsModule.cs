@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EventsWorld.Modules.Legal.Api;
+namespace EventsWorld.Modules.Accounts;
 
-public static class LegalModule
+public static class AccountsModule
 {
-    public static IServiceCollection AddLegalModule(
+    public static IServiceCollection AddAccountsModule(
         this IServiceCollection services,
         IConfiguration configuration)
     {
