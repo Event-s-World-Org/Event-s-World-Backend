@@ -78,9 +78,29 @@ To run the API host (`EventsWorld.Api`) locally:
 dotnet run --project src/Bootstrapper/EventsWorld.Api/EventsWorld.Api.csproj
 ```
 
-Available endpoints on startup:
-* **Health Check:** `GET /health`
-* **OpenAPI Document (Development):** `GET /openapi/v1.json`
+Available endpoints on startup (`http://localhost:5037`):
+* **Liveness:** `GET /health/live` (the process answers)
+* **Readiness:** `GET /health/ready` (PostgreSQL answers within 5 s; 503 otherwise)
+* **OpenAPI document (Development):** `GET /openapi/v1.json`
+* **Scalar UI (Development):** `GET /scalar/v1`
+* **API routes:** `/api/v1/public`, `/participant`, `/me`, `/events/{eventId}`, `/admin`
+
+---
+
+## Request Pipeline (TS-004)
+
+Shared by every endpoint (`Docs/architecture/backend.md` §3–5):
+
+* **Errors:** RFC 9457 ProblemDetails (`application/problem+json`) with a stable `code` (`module.snake_case`, e.g. `registrations.capacity_full`) and a `correlationId`. Exceptions, malformed bodies, validation, rate limiting, `Result` errors and empty 4xx/5xx responses all use it. Exception messages and stack traces never reach the response.
+* **Correlation ID:** the `X-Correlation-ID` request header is reused when it is safe (letters, digits and hyphens, up to 64 characters); otherwise a new one is created. It is returned in the response and added to every log line.
+* **Logging:** Serilog to the console. Levels are set in the `Serilog` section of `appsettings.json`. Emails, tokens and personal data are redacted by property name (`Email`, `Token`, `Phone`, `FullName`, `Document`…) or with `[SensitiveData]`, and the final text is masked again.
+* **Validation:** FluentValidation for the request shape, with `.WithRequestValidation<TRequest>()` on the endpoint. Validators are found in the host and in every module assembly.
+* **Endpoints:** each module implements `IApiEndpoints` (`Shared.Infrastructure/Api`) and registers it with `services.AddSingleton<IApiEndpoints, XEndpoints>()`; the host maps it into the route groups. Business errors return `error.ToProblem()`.
+* **Rate limiting:** per client IP on `/public` and `/participant` (`RateLimiting:AnonymousPermitLimit` per `RateLimiting:AnonymousWindowSeconds`, 60 per minute by default). Exceeding it returns 429 with `Retry-After`.
+* **Proxy:** in production, list the hosting proxy in `ForwardedHeaders:KnownProxies` (IPs) or `ForwardedHeaders:KnownNetworks` (CIDR). Only then is `X-Forwarded-For` used for the client IP; otherwise every client would share the proxy's limit.
+* **CORS:** only the origins in `Cors:AllowedOrigins` (`http://localhost:4200` in development; set the staging and production origins in their environments). No credentials; `ETag`, `Location`, `Retry-After` and `X-Correlation-ID` are exposed to the frontend.
+* **Security headers:** `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, and HSTS outside development.
+* **Telemetry:** OpenTelemetry traces and metrics for ASP.NET Core and `HttpClient` (service `EventsWorld.Api`); the exporter is configured later. `TimeProvider` is registered for testable time.
 
 ---
 
@@ -169,5 +189,7 @@ dotnet test EventsWorld.slnx --no-build
 
 ### Test Suites
 * **`EventsWorld.ArchitectureTests`**: Enforces module isolation, `Domain` purity, the layer dependency rule, `internal` type visibility, and module registration in `Program.cs` using `NetArchTest.Rules`.
-* **`EventsWorld.UnitTests`**: Covers `Shared.Kernel` building blocks (`Result`, `Error`, `Money`, `Entity`, `AggregateRoot`).
-* **`EventsWorld.IntegrationTests`**: Boots the full application host in memory (`ApiFactory`) and checks the database setup against a real PostgreSQL 17 started with Testcontainers: schemas, history tables, extensions, the `anon`/`authenticated` lockout, `ew_app` without DDL and the pooler settings. **Docker must be running.**
+* **`EventsWorld.UnitTests`**: Covers `Shared.Kernel` building blocks (`Result`, `Error`, `Money`, `Entity`, `AggregateRoot`), log masking and the error-to-status mapping.
+* **`EventsWorld.IntegrationTests`**: Boots the full application host in memory (`ApiFactory`, which adds test-only endpoints under `/api/v1/public/test`) and checks:
+  * the request pipeline: ProblemDetails, validation, rate limiting, CORS, security headers, correlation IDs, OpenAPI and Scalar, and that the real Serilog output never contains emails, tokens or personal data;
+  * the database setup against a real PostgreSQL 17 started with Testcontainers: schemas, history tables, extensions, the `anon`/`authenticated` lockout, `ew_app` without DDL, the pooler settings and `/health/ready`. **Docker must be running.**
