@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using EventsWorld.Shared.Kernel.Logging;
+using EventsWorld.Shared.Infrastructure.Logging;
 using Serilog.Core;
 using Serilog.Events;
 
 namespace EventsWorld.Api.Logging;
 
+/// <summary>
+/// For objects logged with <c>{@Object}</c>: sensitive properties (by name or
+/// <c>[SensitiveData]</c>) are redacted and the other text values are masked.
+/// </summary>
 public sealed class SensitiveDataMaskingDestructuringPolicy : IDestructuringPolicy
 {
     public bool TryDestructure(
@@ -14,62 +18,62 @@ public sealed class SensitiveDataMaskingDestructuringPolicy : IDestructuringPoli
         ILogEventPropertyValueFactory propertyValueFactory,
         [NotNullWhen(true)] out LogEventPropertyValue? result)
     {
-        if (value is null)
+        ArgumentNullException.ThrowIfNull(propertyValueFactory);
+
+        var type = value?.GetType();
+        if (value is null || type is null || IsScalar(type) || value is IEnumerable)
         {
             result = null;
             return false;
         }
 
-        var type = value.GetType();
-
-        // Do not destructure primitives or common scalar types
-        if (type.IsPrimitive || type.IsEnum || type == typeof(string) || type == typeof(decimal) || type == typeof(Guid) || type == typeof(DateTime) || type == typeof(DateTimeOffset) || type == typeof(TimeSpan))
+        var properties = new List<LogEventProperty>();
+        foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
         {
-            result = null;
-            return false;
-        }
-
-        if (value is IEnumerable && value is not IDictionary)
-        {
-            result = null;
-            return false;
-        }
-
-        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.CanRead && p.GetIndexParameters().Length == 0);
-
-        var structureProperties = new List<LogEventProperty>();
-
-        foreach (var prop in properties)
-        {
-            object? propVal;
-            try
-            {
-                propVal = prop.GetValue(value);
-            }
-            catch
+            if (!property.CanRead || property.GetIndexParameters().Length > 0)
             {
                 continue;
             }
 
-            if (SensitiveDataMasker.IsSensitivePropertyName(prop.Name))
+            if (SensitiveDataMasker.IsSensitive(property))
             {
-                var maskedVal = prop.Name.Contains("Email", StringComparison.OrdinalIgnoreCase)
-                    ? SensitiveDataMasker.RedactedEmail
-                    : SensitiveDataMasker.RedactedToken;
-                structureProperties.Add(new LogEventProperty(prop.Name, new ScalarValue(maskedVal)));
+                properties.Add(new LogEventProperty(
+                    property.Name,
+                    new ScalarValue(SensitiveDataMasker.RedactedValueFor(property.Name))));
+                continue;
             }
-            else if (propVal is string strVal)
+
+            object? propertyValue;
+            try
             {
-                structureProperties.Add(new LogEventProperty(prop.Name, new ScalarValue(SensitiveDataMasker.Mask(strVal))));
+                propertyValue = property.GetValue(value);
             }
-            else
+            catch (TargetInvocationException)
             {
-                structureProperties.Add(new LogEventProperty(prop.Name, propertyValueFactory.CreatePropertyValue(propVal, destructureObjects: true)));
+                continue;
             }
+
+            properties.Add(new LogEventProperty(
+                property.Name,
+                propertyValue is string text
+                    ? new ScalarValue(SensitiveDataMasker.Mask(text))
+                    : propertyValueFactory.CreatePropertyValue(propertyValue, destructureObjects: true)));
         }
 
-        result = new StructureValue(structureProperties, type.Name);
+        result = new StructureValue(properties, type.Name);
         return true;
     }
+
+    private static bool IsScalar(Type type) =>
+        type.IsPrimitive
+        || type.IsEnum
+        || type == typeof(string)
+        || type == typeof(decimal)
+        || type == typeof(Guid)
+        || type == typeof(DateTime)
+        || type == typeof(DateTimeOffset)
+        || type == typeof(DateOnly)
+        || type == typeof(TimeOnly)
+        || type == typeof(TimeSpan)
+        || type == typeof(Uri);
 }

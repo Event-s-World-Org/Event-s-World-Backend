@@ -1,3 +1,4 @@
+using System.Reflection;
 using EventsWorld.Api.Endpoints;
 using EventsWorld.Api.Extensions;
 using EventsWorld.Api.Logging;
@@ -13,14 +14,23 @@ using EventsWorld.Shared.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog with structured console logging and sensitive data masking
 builder.ConfigureSerilog();
 
-// Configure cross-cutting API concerns: RFC 9457 errors, CORS, rate limiting, health checks, OpenTelemetry, TimeProvider
-builder.Services.AddOpenApi();
-builder.Services.AddApiCrossCuttingConcerns(builder.Configuration);
+Assembly[] moduleAssemblies =
+[
+    typeof(AccountsModule).Assembly,
+    typeof(EventsModule).Assembly,
+    typeof(RegistrationsModule).Assembly,
+    typeof(PaymentsModule).Assembly,
+    typeof(FilesModule).Assembly,
+    typeof(NotificationsModule).Assembly,
+    typeof(AuditModule).Assembly,
+    typeof(LegalModule).Assembly,
+];
 
-// Register modules
+// RFC 9457 errors, validation, CORS, rate limiting, health checks, OpenAPI, OpenTelemetry, TimeProvider (TS-004).
+builder.Services.AddApiCrossCuttingConcerns(builder.Configuration, [typeof(Program).Assembly, .. moduleAssemblies]);
+
 builder.Services
     .AddAccountsModule(builder.Configuration)
     .AddEventsModule(builder.Configuration)
@@ -45,12 +55,9 @@ if (args.Length > 0 && args[0] == "migrate")
     return;
 }
 
-// Use cross-cutting request pipeline: Correlation ID, security headers, exception handling, Scalar UI, CORS, rate limiting, health checks
 app.UseApiCrossCuttingConcerns();
 
-app.UseHttpsRedirection();
-
-// Register v1 route groups (/api/v1/public, /participant, /me, /events/{eventId}, /admin)
+// /api/v1/public, /participant, /me, /events/{eventId}, /admin and every module's endpoints.
 app.MapApiV1();
 
 await app.RunAsync();

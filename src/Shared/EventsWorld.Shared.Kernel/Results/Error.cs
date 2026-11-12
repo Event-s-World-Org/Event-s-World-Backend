@@ -16,9 +16,13 @@ public record Error(string Code, string Description, ErrorType Type = ErrorType.
     public static Error Conflict(string code, string description) => new(code, description, ErrorType.Conflict);
     public static Error Unauthorized(string code, string description) => new(code, description, ErrorType.Unauthorized);
     public static Error Forbidden(string code, string description) => new(code, description, ErrorType.Forbidden);
+    public static Error PreconditionFailed(string code, string description) => new(code, description, ErrorType.PreconditionFailed);
 }
 
-/// <summary>Maps to HTTP status codes: 500, 400, 404, 409, 401 and 403.</summary>
+/// <summary>
+/// Maps to HTTP status codes: 500, 400, 404, 409, 401, 403 and 412 (a stale <c>If-Match</c>
+/// ETag, backend.md §4).
+/// </summary>
 public enum ErrorType
 {
     Failure = 0,
@@ -26,5 +30,6 @@ public enum ErrorType
     NotFound = 2,
     Conflict = 3,
     Unauthorized = 4,
-    Forbidden = 5
+    Forbidden = 5,
+    PreconditionFailed = 6
 }

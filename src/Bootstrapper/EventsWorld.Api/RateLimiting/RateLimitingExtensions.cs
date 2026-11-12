@@ -1,75 +1,67 @@
 using System.Globalization;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 
 namespace EventsWorld.Api.RateLimiting;
+
+/// <summary>Per-IP limit for the anonymous route groups (NFR-04.2), from <c>RateLimiting</c> settings.</summary>
+public sealed class RateLimitingOptions
+{
+    public const string SectionName = "RateLimiting";
+
+    public int AnonymousPermitLimit { get; set; } = 60;
+    public int AnonymousWindowSeconds { get; set; } = 60;
+}
 
 public static class RateLimitingExtensions
 {
     public const string AnonymousPolicy = "anonymous";
-    public const string ProblemDetailsContentType = "application/problem+json";
 
     public static IServiceCollection AddApiRateLimiting(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<RateLimitingOptions>(configuration.GetSection(RateLimitingOptions.SectionName));
+
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-            options.OnRejected = async (context, token) =>
-            {
-                context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
 
-                var config = context.HttpContext.RequestServices.GetService<IConfiguration>() ?? configuration;
-                var windowSeconds = config.GetValue("RateLimiting:AnonymousWindowSeconds", 60);
-
-                var retryAfterSeconds = windowSeconds;
-                if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
-                {
-                    retryAfterSeconds = Math.Max(1, (int)retryAfter.TotalSeconds);
-                }
-
-                context.HttpContext.Response.Headers.RetryAfter = retryAfterSeconds.ToString(CultureInfo.InvariantCulture);
-
-                var correlationId = context.HttpContext.Items["CorrelationId"]?.ToString()
-                    ?? context.HttpContext.TraceIdentifier;
-
-                var problem = new ProblemDetails
-                {
-                    Status = StatusCodes.Status429TooManyRequests,
-                    Title = "Too Many Requests",
-                    Type = "https://datatracker.ietf.org/doc/html/rfc9457",
-                    Detail = "Rate limit exceeded. Please try again later.",
-                    Instance = context.HttpContext.Request.Path
-                };
-
-                problem.Extensions["code"] = "rate_limit.exceeded";
-                problem.Extensions["correlationId"] = correlationId;
-
-                await context.HttpContext.Response.WriteAsJsonAsync(
-                    problem,
-                    options: null,
-                    contentType: ProblemDetailsContentType,
-                    cancellationToken: token);
-            };
-
+            // The client IP comes from the connection. Behind a proxy, UseForwardedHeaders replaces it
+            // with the real client IP, but only for proxies listed in ForwardedHeaders settings: an
+            // X-Forwarded-For header sent by anyone else is ignored, so it cannot reset the limit.
             options.AddPolicy(AnonymousPolicy, httpContext =>
             {
-                var config = httpContext.RequestServices.GetService<IConfiguration>() ?? configuration;
-                var permitLimit = config.GetValue("RateLimiting:AnonymousPermitLimit", 60);
-                var windowSeconds = config.GetValue("RateLimiting:AnonymousWindowSeconds", 60);
+                var limits = httpContext.RequestServices.GetRequiredService<IOptions<RateLimitingOptions>>().Value;
+                var clientIp = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
-                var ip = httpContext.Connection.RemoteIpAddress?.ToString()
-                    ?? httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault()
-                    ?? "anonymous";
-
-                return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions
+                return RateLimitPartition.GetFixedWindowLimiter(clientIp, _ => new FixedWindowRateLimiterOptions
                 {
-                    PermitLimit = permitLimit,
-                    Window = TimeSpan.FromSeconds(windowSeconds),
-                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                    QueueLimit = 0
+                    PermitLimit = limits.AnonymousPermitLimit,
+                    Window = TimeSpan.FromSeconds(limits.AnonymousWindowSeconds),
+                    QueueLimit = 0,
                 });
             });
+
+            options.OnRejected = async (context, cancellationToken) =>
+            {
+                var httpContext = context.HttpContext;
+                var limits = httpContext.RequestServices.GetRequiredService<IOptions<RateLimitingOptions>>().Value;
+
+                var retryAfterSeconds = context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter)
+                    ? Math.Max(1, (int)Math.Ceiling(retryAfter.TotalSeconds))
+                    : limits.AnonymousWindowSeconds;
+                httpContext.Response.Headers.RetryAfter = retryAfterSeconds.ToString(CultureInfo.InvariantCulture);
+
+                await httpContext.RequestServices.GetRequiredService<IProblemDetailsService>().WriteAsync(new ProblemDetailsContext
+                {
+                    HttpContext = httpContext,
+                    ProblemDetails = new ProblemDetails
+                    {
+                        Status = StatusCodes.Status429TooManyRequests,
+                        Detail = "Rate limit exceeded. Please try again later.",
+                    },
+                });
+            };
         });
 
         return services;

@@ -1,6 +1,5 @@
 using EventsWorld.Api.RateLimiting;
-using EventsWorld.Api.Validation;
-using FluentValidation;
+using EventsWorld.Shared.Infrastructure.Api;
 
 namespace EventsWorld.Api.Endpoints;
 
@@ -8,54 +7,34 @@ public static class ApiRouteGroups
 {
     public const string V1Prefix = "/api/v1";
 
-    public static RouteGroupBuilder MapApiV1(this IEndpointRouteBuilder endpoints)
+    /// <summary>
+    /// Creates the <c>/api/v1</c> groups (backend.md §4) and maps every module's
+    /// <see cref="IApiEndpoints"/>. Authentication and authorization policies are added to the
+    /// groups in TS-005 and TS-006.
+    /// </summary>
+    public static IEndpointRouteBuilder MapApiV1(this IEndpointRouteBuilder endpoints)
     {
-        var api = endpoints.MapGroup(V1Prefix);
+        ArgumentNullException.ThrowIfNull(endpoints);
 
-        // Anonymous public group - rate limited
-        var publicGroup = api.MapGroup("/public")
-            .RequireRateLimiting(RateLimitingExtensions.AnonymousPolicy)
-            .WithTags("Public");
+        var v1 = endpoints.MapGroup(V1Prefix);
 
-        // Baseline public endpoints for health/ping, validation and testing
-        publicGroup.MapGet("/ping", () => Results.Ok(new { message = "pong" }));
+        var groups = new ApiGroups(
+            V1: v1,
+            Public: v1.MapGroup("/public")
+                .RequireRateLimiting(RateLimitingExtensions.AnonymousPolicy)
+                .WithTags("Public"),
+            Participant: v1.MapGroup("/participant")
+                .RequireRateLimiting(RateLimitingExtensions.AnonymousPolicy)
+                .WithTags("Participant"),
+            Me: v1.MapGroup("/me").WithTags("Me"),
+            Event: v1.MapGroup("/events/{eventId:guid}").WithTags("Events"),
+            Admin: v1.MapGroup("/admin").WithTags("Admin"));
 
-        publicGroup.MapPost("/validate", (PingRequest request) => Results.Ok(request))
-            .WithRequestValidation<PingRequest>();
-
-        publicGroup.MapGet("/crash", () =>
+        foreach (var module in endpoints.ServiceProvider.GetServices<IApiEndpoints>())
         {
-            throw new InvalidOperationException("Simulated crash for exception testing.");
-        });
+            module.MapEndpoints(groups);
+        }
 
-        // Anonymous participant group - rate limited
-        api.MapGroup("/participant")
-            .RequireRateLimiting(RateLimitingExtensions.AnonymousPolicy)
-            .WithTags("Participant");
-
-        // Authenticated current user group
-        api.MapGroup("/me")
-            .WithTags("Me");
-
-        // Event-scoped group
-        api.MapGroup("/events/{eventId}")
-            .WithTags("Events");
-
-        // Admin group
-        api.MapGroup("/admin")
-            .WithTags("Admin");
-
-        return api;
-    }
-}
-
-public sealed record PingRequest(string Name, string Email);
-
-public sealed class PingRequestValidator : AbstractValidator<PingRequest>
-{
-    public PingRequestValidator()
-    {
-        RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required.");
-        RuleFor(x => x.Email).NotEmpty().EmailAddress().WithMessage("A valid email is required.");
+        return endpoints;
     }
 }

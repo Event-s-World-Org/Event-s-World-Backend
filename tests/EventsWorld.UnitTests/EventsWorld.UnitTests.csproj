@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Shared\EventsWorld.Shared.Kernel\EventsWorld.Shared.Kernel.csproj" />
+    <ProjectReference Include="..\..\src\Shared\EventsWorld.Shared.Infrastructure\EventsWorld.Shared.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

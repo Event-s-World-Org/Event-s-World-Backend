@@ -1,98 +1,85 @@
+using System.Reflection;
 using EventsWorld.Api.Errors;
 using EventsWorld.Api.Health;
 using EventsWorld.Api.Middleware;
 using EventsWorld.Api.RateLimiting;
 using FluentValidation;
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Scalar.AspNetCore;
 
 namespace EventsWorld.Api.Extensions;
 
+/// <summary>The shared request pipeline of TS-004 (backend.md §3–5).</summary>
 public static class ServiceCollectionExtensions
 {
-    public const string CorsPolicyName = "DefaultCorsPolicy";
+    public const string ServiceName = "EventsWorld.Api";
 
+    /// <param name="services">The host services.</param>
+    /// <param name="configuration">The host configuration.</param>
+    /// <param name="validatorAssemblies">Assemblies with FluentValidation validators (the host and every module).</param>
     public static IServiceCollection AddApiCrossCuttingConcerns(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IEnumerable<Assembly> validatorAssemblies)
     {
-        // 1. Testable time provider
         services.AddSingleton(TimeProvider.System);
 
-        // 2. Exception handling & RFC 9457 ProblemDetails
-        services.AddExceptionHandler<GlobalExceptionHandler>();
-        services.AddProblemDetails();
-        services.AddValidatorsFromAssemblyContaining<Program>();
+        services.AddApiProblemDetails();
+        services.AddValidatorsFromAssemblies(validatorAssemblies, includeInternalTypes: true);
 
-        // 3. CORS
-        var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-            ?? ["http://localhost:4200", "http://localhost:3000"];
-
-        services.AddCors(options =>
+        services.AddOpenApi();
+        services.AddFrontendCors(configuration);
+        services.AddTrustedProxies(configuration);
+        services.AddHsts(options =>
         {
-            options.AddPolicy(CorsPolicyName, policy =>
-            {
-                policy.WithOrigins(allowedOrigins)
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
-            });
+            options.MaxAge = TimeSpan.FromDays(365);
+            options.IncludeSubDomains = true;
         });
-
-        // 4. Rate Limiting
         services.AddApiRateLimiting(configuration);
+        services.AddApiHealthChecks();
 
-        // 5. Health Checks
-        services.AddApiHealthChecks(configuration);
-
-        // 6. OpenTelemetry
+        // Traces and metrics are collected now; the exporter is configured later (NFR-06, [Next]).
         services.AddOpenTelemetry()
-            .WithTracing(tracing =>
-            {
-                tracing
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation();
-            })
-            .WithMetrics(metrics =>
-            {
-                metrics
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation();
-            });
+            .ConfigureResource(resource => resource.AddService(ServiceName))
+            .WithTracing(tracing => tracing
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation())
+            .WithMetrics(metrics => metrics
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation());
 
         return services;
     }
 
     public static WebApplication UseApiCrossCuttingConcerns(this WebApplication app)
     {
-        // 1. Correlation ID
+        ArgumentNullException.ThrowIfNull(app);
+
+        // The real client IP and scheme first, so everything after it (logs, rate limit, HTTPS) uses them.
+        app.UseForwardedHeaders();
         app.UseCorrelationId();
-
-        // 2. Security Headers
         app.UseSecurityHeaders();
-
-        // 3. Global Exception Handler
         app.UseExceptionHandler();
+        // Empty 4xx/5xx responses (unknown route, wrong method) also get a ProblemDetails body.
+        app.UseStatusCodePages();
 
-        // 4. OpenAPI & Scalar in Development
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseHsts();
+        }
+
+        app.UseHttpsRedirection();
+
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
-            app.MapScalarApiReference(options =>
-            {
-                options.WithTitle("EventsWorld API Reference");
-                options.WithTheme(ScalarTheme.Moon);
-            });
+            app.MapScalarApiReference(options => options.WithTitle("Event's World API"));
         }
 
-        // 5. CORS
-        app.UseCors(CorsPolicyName);
-
-        // 6. Rate Limiter
+        app.UseCors(NetworkExtensions.CorsPolicyName);
         app.UseRateLimiter();
-
-        // 7. Health Checks
         app.MapApiHealthChecks();
 
         return app;

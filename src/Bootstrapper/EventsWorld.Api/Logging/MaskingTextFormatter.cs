@@ -1,19 +1,18 @@
-using EventsWorld.Shared.Kernel.Logging;
+using EventsWorld.Shared.Infrastructure.Logging;
 using Serilog.Events;
 using Serilog.Formatting;
 
 namespace EventsWorld.Api.Logging;
 
+/// <summary>Masks emails and tokens in the final log text, including exception messages.</summary>
 public sealed class MaskingTextFormatter(ITextFormatter innerFormatter) : ITextFormatter
 {
-    private readonly ITextFormatter _innerFormatter = innerFormatter ?? throw new ArgumentNullException(nameof(innerFormatter));
-
     public void Format(LogEvent logEvent, TextWriter output)
     {
-        using var stringWriter = new StringWriter();
-        _innerFormatter.Format(logEvent, stringWriter);
-        var formatted = stringWriter.ToString();
-        var masked = SensitiveDataMasker.Mask(formatted);
-        output.Write(masked);
+        ArgumentNullException.ThrowIfNull(output);
+
+        using var buffer = new StringWriter();
+        innerFormatter.Format(logEvent, buffer);
+        output.Write(SensitiveDataMasker.Mask(buffer.ToString()));
     }
 }
