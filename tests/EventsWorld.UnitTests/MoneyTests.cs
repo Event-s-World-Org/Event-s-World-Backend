@@ -5,12 +5,27 @@ namespace EventsWorld.UnitTests;
 public sealed class MoneyTests
 {
     [Fact]
-    public void Constructor_ShouldRoundToTwoDecimals_AndNormalizeCurrency()
+    public void Constructor_ShouldKeepTheAmount_AndNormalizeCurrency()
     {
-        var money = new Money(12.345m, "usd");
+        var money = new Money(120.50m, "bob");
 
-        Assert.Equal(12.35m, money.Amount);
-        Assert.Equal("USD", money.Currency);
+        Assert.Equal(120.50m, money.Amount);
+        Assert.Equal("BOB", money.Currency);
+    }
+
+    [Fact]
+    public void Constructor_WithMoreThanTwoDecimals_ShouldThrowInsteadOfRounding()
+    {
+        Assert.Throws<ArgumentException>(() => new Money(12.345m, "BOB"));
+    }
+
+    [Fact]
+    public void Zero_ShouldUseTheGivenCurrency()
+    {
+        var zero = Money.Zero("BOB");
+
+        Assert.Equal(0m, zero.Amount);
+        Assert.Equal("BOB", zero.Currency);
     }
 
     [Theory]
@@ -18,6 +33,7 @@ public sealed class MoneyTests
     [InlineData("")]
     [InlineData("US")]
     [InlineData("USDD")]
+    [InlineData("B1$")]
     public void Constructor_WithInvalidCurrency_ShouldThrowArgumentException(string? invalidCurrency)
     {
         Assert.Throws<ArgumentException>(() => new Money(10m, invalidCurrency!));
