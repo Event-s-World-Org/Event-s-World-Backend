@@ -1,10 +1,9 @@
 using System.Net;
-using Microsoft.AspNetCore.Mvc.Testing;
+using EventsWorld.IntegrationTests.Infrastructure;
 
 namespace EventsWorld.IntegrationTests;
 
-public sealed class HealthCheckTests(WebApplicationFactory<Program> factory)
-    : IClassFixture<WebApplicationFactory<Program>>
+public sealed class HealthCheckTests(ApiFactory factory) : IClassFixture<ApiFactory>
 {
     [Fact]
     public async Task GetHealth_ShouldBootHostWithAllModules_AndReturnOk()
