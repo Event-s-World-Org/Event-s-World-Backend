@@ -1,3 +1,6 @@
+using EventsWorld.Api.Endpoints;
+using EventsWorld.Api.Extensions;
+using EventsWorld.Api.Logging;
 using EventsWorld.Modules.Accounts.Api;
 using EventsWorld.Modules.Audit.Api;
 using EventsWorld.Modules.Events.Api;
@@ -9,11 +12,14 @@ using EventsWorld.Modules.Registrations.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Configure Serilog with structured console logging and sensitive data masking
+builder.ConfigureSerilog();
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// Configure cross-cutting API concerns: RFC 9457 errors, CORS, rate limiting, health checks, OpenTelemetry, TimeProvider
 builder.Services.AddOpenApi();
+builder.Services.AddApiCrossCuttingConcerns(builder.Configuration);
 
+// Register modules
 builder.Services
     .AddAccountsModule(builder.Configuration)
     .AddEventsModule(builder.Configuration)
@@ -26,15 +32,14 @@ builder.Services
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+// Use cross-cutting request pipeline: Correlation ID, security headers, exception handling, Scalar UI, CORS, rate limiting, health checks
+app.UseApiCrossCuttingConcerns();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/health", () => Results.Ok(new { status = "Healthy", timestamp = System.DateTimeOffset.UtcNow }));
+// Register v1 route groups (/api/v1/public, /participant, /me, /events/{eventId}, /admin)
+app.MapApiV1();
 
 app.Run();
+
 public partial class Program { }
