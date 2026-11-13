@@ -211,3 +211,27 @@ dotnet test EventsWorld.slnx --no-build
 * **`EventsWorld.IntegrationTests`**: Boots the full application host in memory (`ApiFactory`, which adds test-only endpoints under `/api/v1/public/test`) and checks:
   * the request pipeline: ProblemDetails, validation, rate limiting, CORS, security headers, correlation IDs, OpenAPI and Scalar, and that the real Serilog output never contains emails, tokens or personal data;
   * the database setup against a real PostgreSQL 17 started with Testcontainers: schemas, history tables, extensions, the `anon`/`authenticated` lockout, `ew_app` without DDL, the pooler settings and `/health/ready`. **Docker must be running.**
+
+---
+
+## Continuous Integration
+
+`.github/workflows/ci.yml` runs on every pull request to `main`, on every push to `main`, and on demand (*Actions → CI → Run workflow*). The job **Build, format and test** fails on:
+
+* a build warning (`-warnaserror`);
+* a formatting difference (`dotnet format --verify-no-changes`);
+* a failing unit, architecture or integration test. Integration tests use a real PostgreSQL container on the runner's Docker engine.
+
+Test results appear as annotations and in the job summary. On failure, the `test-results` artifact (TRX files and hang dumps) is kept for 7 days. The job is limited to 10 minutes.
+
+Before pushing, run the same checks locally:
+
+```bash
+dotnet build EventsWorld.slnx -warnaserror
+dotnet format EventsWorld.slnx --verify-no-changes
+dotnet test EventsWorld.slnx        # Docker must be running
+```
+
+To fix formatting automatically, run `dotnet format EventsWorld.slnx`. Text files use LF line endings (`.gitattributes`); in a clone made before that, the same command also converts the old CRLF files, without changes for Git.
+
+> **Required check:** a repository admin must mark **Build, format and test** as a required status check in the branch protection rule for `main` (*Settings → Branches*), so a pull request cannot be merged until it passes.
