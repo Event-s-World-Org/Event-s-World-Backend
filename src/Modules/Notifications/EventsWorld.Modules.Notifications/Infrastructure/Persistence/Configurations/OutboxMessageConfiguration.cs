@@ -29,3 +29,4 @@ internal sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outb
         builder.HasIndex(m => m.CreatedAt);
     }
 }
+

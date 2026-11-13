@@ -19,3 +19,4 @@ public sealed class OutboxRetryBackoffTests
         Assert.Equal(TimeSpan.FromSeconds(expectedSeconds), backoff);
     }
 }
+

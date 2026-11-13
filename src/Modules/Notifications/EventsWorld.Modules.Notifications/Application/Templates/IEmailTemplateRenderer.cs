@@ -9,3 +9,4 @@ internal interface IEmailTemplateRenderer
 {
     Result<RenderedEmail> Render(string templateName, object model);
 }
+

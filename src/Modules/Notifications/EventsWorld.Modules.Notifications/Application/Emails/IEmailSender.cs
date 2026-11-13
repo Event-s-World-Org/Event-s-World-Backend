@@ -9,3 +9,4 @@ internal interface IEmailSender
 {
     Task<Result<EmailSendReceipt>> SendAsync(EmailMessage message, CancellationToken cancellationToken = default);
 }
+

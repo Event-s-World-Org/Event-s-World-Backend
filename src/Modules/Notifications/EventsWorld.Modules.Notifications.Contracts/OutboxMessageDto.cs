@@ -6,3 +6,4 @@ public sealed record OutboxMessageDto(
     string ToEmail,
     string Template,
     object Payload);
+

@@ -20,3 +20,4 @@ public interface INotificationsModule
         object payload,
         CancellationToken cancellationToken = default);
 }
+

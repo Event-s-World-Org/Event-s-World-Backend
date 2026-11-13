@@ -15,3 +15,4 @@ internal sealed class OutboxStore(NotificationsDbContext dbContext, IUnitOfWork 
     public Task SaveChangesAsync(CancellationToken cancellationToken = default) =>
         dbContext.SaveChangesAsync(cancellationToken);
 }
+

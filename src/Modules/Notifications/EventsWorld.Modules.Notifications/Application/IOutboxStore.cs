@@ -9,3 +9,4 @@ internal interface IOutboxStore
 
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }
+

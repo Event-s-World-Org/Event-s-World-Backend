@@ -42,3 +42,4 @@ internal sealed partial class DevelopmentEmailSender : IEmailSender
         string idempotencyKey,
         string providerId);
 }
+

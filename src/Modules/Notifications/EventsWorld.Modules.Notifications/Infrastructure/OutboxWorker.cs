@@ -205,3 +205,4 @@ internal sealed partial class OutboxWorker : ScheduledJob
     [LoggerMessage(Level = LogLevel.Warning, Message = "Delivery failed for outbox {MessageId} to {To} (attempt {Attempt}/{MaxAttempts}): {Error}.")]
     private static partial void LogDeliveryFailed(ILogger logger, Guid messageId, string to, int attempt, int maxAttempts, string error);
 }
+

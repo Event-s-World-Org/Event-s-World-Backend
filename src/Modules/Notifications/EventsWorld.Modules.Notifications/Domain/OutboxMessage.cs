@@ -56,3 +56,4 @@ internal sealed class OutboxMessage
         NextAttemptAt = null;
     }
 }
+

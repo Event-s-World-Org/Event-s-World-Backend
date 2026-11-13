@@ -10,3 +10,4 @@ internal sealed record EmailMessage(
 
 /// <summary>Receipt returned by the email provider upon acceptance.</summary>
 internal sealed record EmailSendReceipt(string ProviderMessageId);
+

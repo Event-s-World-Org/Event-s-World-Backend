@@ -143,3 +143,4 @@ namespace EventsWorld.Modules.Notifications.Infrastructure.Persistence.Migration
         }
     }
 }
+

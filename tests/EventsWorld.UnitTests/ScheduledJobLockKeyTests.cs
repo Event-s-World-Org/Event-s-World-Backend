@@ -34,3 +34,4 @@ public sealed class ScheduledJobLockKeyTests
         Assert.Throws<ArgumentException>(() => ScheduledJob.ComputeLockId(invalidName));
     }
 }
+

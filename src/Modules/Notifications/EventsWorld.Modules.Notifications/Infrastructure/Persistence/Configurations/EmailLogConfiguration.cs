@@ -38,3 +38,4 @@ internal sealed class EmailLogConfiguration : IEntityTypeConfiguration<EmailLog>
         builder.HasIndex(l => l.SentAt);
     }
 }
+
