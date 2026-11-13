@@ -1,3 +1,4 @@
+using EventsWorld.Modules.Notifications.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventsWorld.Modules.Notifications.Infrastructure.Persistence;
@@ -6,6 +7,10 @@ namespace EventsWorld.Modules.Notifications.Infrastructure.Persistence;
 internal sealed class NotificationsDbContext(DbContextOptions<NotificationsDbContext> options) : DbContext(options)
 {
     internal const string Schema = "notifications";
+
+    public DbSet<OutboxMessage> Outbox => Set<OutboxMessage>();
+
+    public DbSet<EmailLog> EmailLogs => Set<EmailLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

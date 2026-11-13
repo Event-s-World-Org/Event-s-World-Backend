@@ -15,4 +15,9 @@
     <ProjectReference Include="..\..\..\Shared\EventsWorld.Shared.Kernel\EventsWorld.Shared.Kernel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="EventsWorld.UnitTests" />
+    <InternalsVisibleTo Include="EventsWorld.IntegrationTests" />
+  </ItemGroup>
+
 </Project>
