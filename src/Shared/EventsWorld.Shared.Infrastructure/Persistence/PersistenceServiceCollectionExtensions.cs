@@ -1,7 +1,9 @@
+using EventsWorld.Shared.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Npgsql;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 
@@ -43,9 +45,11 @@ public static class PersistenceServiceCollectionExtensions
             }
 
             options.UseSnakeCaseNamingConvention();
+            options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         });
 
         services.AddSingleton(new ModuleDatabase(typeof(TContext), schema));
+        services.TryAddScoped<IUnitOfWork, UnitOfWork>();
         return services;
     }
 
