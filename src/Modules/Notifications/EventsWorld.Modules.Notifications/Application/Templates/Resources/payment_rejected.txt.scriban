@@ -1,0 +1,8 @@
+Hola, {{ participant_name }}
+
+El comprobante enviado para tu inscripción ({{ registration_code }}) en {{ event_title }} fue rechazado:
+Motivo: {{ reason }}
+{{ if deadline != "" }}Puedes subir un nuevo comprobante antes de: {{ deadline }}
+{{ end }}
+Consulta el estado de tu inscripción desde tu enlace personal:
+{{ personal_link }}

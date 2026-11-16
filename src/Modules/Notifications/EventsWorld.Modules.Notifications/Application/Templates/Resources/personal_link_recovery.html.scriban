@@ -1,0 +1,16 @@
+<h2 style="margin: 0 0 16px; font-size: 23px; line-height: 1.25; color: #0E1B2A; font-weight: 700;">Hola, {{ participant_name }}</h2>
+<p style="margin: 0 0 16px; font-size: 16px; line-height: 1.55; color: #3E5367;">
+    Solicitaste recuperar los enlaces personales de tus inscripciones activas en <strong style="color: #0E1B2A;">Event&#39;s World</strong>:
+</p>
+{{ for item in registrations }}
+<div style="background-color: #EBF1F7; border: 1px solid #D3DEE9; border-radius: 12px; padding: 16px; margin: 16px 0;">
+    <p style="margin: 0 0 4px; font-size: 16px; font-weight: 700; color: #0E1B2A;">{{ item.event_title }}</p>
+    <p style="margin: 0 0 12px; font-size: 14px; color: #3E5367;">Código de inscripción: <strong style="color: #0E1B2A;">{{ item.registration_code }}</strong></p>
+    <a href="{{ item.personal_link }}" style="display: inline-block; background-color: #0B63B6; color: #FFFFFF; text-decoration: none; font-size: 14px; font-weight: 600; padding: 10px 20px; border-radius: 12px;">
+        Ver mi inscripción
+    </a>
+</div>
+{{ end }}
+<p style="margin: 24px 0 0; font-size: 12px; line-height: 1.5; color: #3E5367;">
+    Si no solicitaste recuperar tus enlaces personales, puedes ignorar este mensaje de forma segura.
+</p>

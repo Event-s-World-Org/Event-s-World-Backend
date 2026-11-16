@@ -1,0 +1,7 @@
+Hola, {{ participant_name }}
+
+El plazo de inscripción para {{ event_title }} ha finalizado y tu inscripción ({{ registration_code }}) quedó rechazada definitivamente.
+Motivo: {{ reason }}
+
+Puedes consultar el historial de tu inscripción desde tu enlace personal:
+{{ personal_link }}

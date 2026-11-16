@@ -7,12 +7,24 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="MailKit" />
+    <PackageReference Include="Scriban" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Application\Templates\Resources\**\*" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EventsWorld.Modules.Notifications.Contracts\EventsWorld.Modules.Notifications.Contracts.csproj" />
     <ProjectReference Include="..\..\..\Shared\EventsWorld.Shared.Infrastructure\EventsWorld.Shared.Infrastructure.csproj" />
     <ProjectReference Include="..\..\..\Shared\EventsWorld.Shared.Kernel\EventsWorld.Shared.Kernel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="EventsWorld.UnitTests" />
+    <InternalsVisibleTo Include="EventsWorld.IntegrationTests" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,7 @@
+Hola, {{ organizer_name }}
+
+La administración de la plataforma ha suspendido temporalmente tu evento {{ event_title }}.
+Motivo de la suspensión: {{ reason }}
+
+Puedes revisar el estado en el panel del evento:
+{{ manage_event_link }}

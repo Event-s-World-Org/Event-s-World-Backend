@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+
 namespace EventsWorld.Shared.Infrastructure.Data;
 
 /// <summary>
@@ -6,5 +9,11 @@ namespace EventsWorld.Shared.Infrastructure.Data;
 /// </summary>
 public interface IUnitOfWork
 {
+    Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
+
+    void Enlist(DbContext context);
+
     Task CommitAsync(CancellationToken cancellationToken = default);
+
+    Task RollbackAsync(CancellationToken cancellationToken = default);
 }

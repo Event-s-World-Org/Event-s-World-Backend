@@ -97,6 +97,13 @@ Set these in each environment (environment variables use `__`, e.g. `Cors__Allow
 | `ForwardedHeaders:KnownProxies` / `ForwardedHeaders:KnownNetworks` | none | The IPs (or CIDR ranges) of the hosting proxy. Without them, every client shares the proxy's IP and therefore the same rate limit. |
 | `RateLimiting:AnonymousPermitLimit` / `RateLimiting:AnonymousWindowSeconds` | 60 requests / 60 s | The per-IP limit on `/api/v1/public` and `/api/v1/participant`. Exceeding it returns 429 with `Retry-After`. |
 | `Serilog:MinimumLevel` | `Information` (`Warning` for ASP.NET Core and EF Core) | The log levels. |
+| `Resend:Provider` | `Resend` (`Smtp` in development) | `Resend` in staging and production; `Smtp` (Mailpit) or `Development` (in-memory log) in local development only. |
+| `Resend:ApiKey` | none *(secret)* | The Resend API key (`re_...`), passed as a user secret or environment variable (`Resend__ApiKey`). Required on startup when `Resend:Provider` is `Resend`. |
+| `Resend:SenderEmail` / `Resend:SenderName` | `notificaciones@eventsworld.app` / `Event's World` | The verified sender address and display name. |
+| `Resend:SmtpHost` / `Resend:SmtpPort` | `localhost` / `1025` | The local SMTP catcher (Mailpit) used in development when `Resend:Provider` is `Smtp`. |
+| `Notifications:WorkerEnabled` | `true` (`false` in integration tests) | Enables or disables the background outbox and retention workers. |
+| `Notifications:OutboxIntervalSeconds` / `Notifications:BatchSize` | `5` s / `25` messages | Polling interval and batch size for the outbox worker. |
+| `Notifications:MaxAttempts` / `Notifications:RetentionDays` | `30` attempts / `90` days | Maximum delivery attempts (covering > 24 hours with hourly retries after the fifth attempt) and retention window for processed outbox and email log rows. |
 
 ---
 
@@ -145,7 +152,7 @@ Never stored in the repository or in `appsettings*.json`. Locally use user secre
 
 ```bash
 cp .env.example .env            # choose your local passwords
-docker compose up -d            # PostgreSQL 17 + Supabase emulation + roles (first start only)
+docker compose up -d            # PostgreSQL 17 + Supabase emulation + roles (first start only) + Mailpit (SMTP :1025, UI http://localhost:8025)
 dotnet tool restore
 
 dotnet user-secrets --project src/Bootstrapper/EventsWorld.Api set "ConnectionStrings:Migrations" "Host=localhost;Port=5432;Database=eventsworld;Username=ew_migrator;Password=<EW_MIGRATOR_PASSWORD>"
