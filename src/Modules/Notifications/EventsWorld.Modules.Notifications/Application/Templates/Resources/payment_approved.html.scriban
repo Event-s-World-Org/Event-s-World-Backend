@@ -1,0 +1,20 @@
+<h2 style="margin: 0 0 16px; font-size: 23px; line-height: 1.25; color: #0E1B2A; font-weight: 700;">¡Pago aprobado, {{ participant_name }}!</h2>
+<p style="margin: 0 0 16px; font-size: 16px; line-height: 1.55; color: #3E5367;">
+    Tu pago para <strong style="color: #0E1B2A;">{{ event_title }}</strong> fue verificado y tu inscripción está <strong style="color: #166534;">aprobada</strong>.
+</p>
+<div style="background-color: #DCFCE7; border: 1px solid #166534; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: center;">
+    <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #166534; display: block; margin-bottom: 4px;">Código de inscripción</span>
+    <span style="font-size: 20px; font-weight: 700; color: #166534; letter-spacing: 2px;">{{ registration_code }}</span>
+</div>
+<p style="margin: 0 0 24px; font-size: 16px; line-height: 1.55; color: #3E5367;">
+    Tu cupo está confirmado. Puedes consultar el detalle de tu inscripción en tu enlace personal:
+</p>
+<div style="text-align: center; margin: 28px 0;">
+    <a class="ew-btn" href="{{ personal_link }}" style="display: inline-block; background-color: #0B63B6; color: #FFFFFF; text-decoration: none; font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 12px;">
+        Ver mi inscripción
+    </a>
+</div>
+<p style="margin: 24px 0 0; font-size: 12px; line-height: 1.5; color: #3E5367;">
+    Enlace personal:<br />
+    <a href="{{ personal_link }}" style="color: #0B63B6; word-break: break-all;">{{ personal_link }}</a>
+</p>

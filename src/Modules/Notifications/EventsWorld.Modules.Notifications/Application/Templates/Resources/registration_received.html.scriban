@@ -1,0 +1,20 @@
+<h2 style="margin: 0 0 16px; font-size: 23px; line-height: 1.25; color: #0E1B2A; font-weight: 700;">¡Hola, {{ participant_name }}!</h2>
+<p style="margin: 0 0 16px; font-size: 16px; line-height: 1.55; color: #3E5367;">
+    Hemos recibido tu solicitud de inscripción para <strong style="color: #0E1B2A;">{{ event_title }}</strong>.
+</p>
+<div style="background-color: #EBF1F7; border: 1px solid #D3DEE9; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: center;">
+    <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #3E5367; display: block; margin-bottom: 4px;">Código de inscripción</span>
+    <span style="font-size: 20px; font-weight: 700; color: #0E1B2A; letter-spacing: 2px;">{{ registration_code }}</span>
+</div>
+<p style="margin: 0 0 24px; font-size: 16px; line-height: 1.55; color: #3E5367;">
+    Puedes consultar los detalles y el estado de tu inscripción en cualquier momento desde tu enlace personal:
+</p>
+<div style="text-align: center; margin: 28px 0;">
+    <a class="ew-btn" href="{{ personal_link }}" style="display: inline-block; background-color: #0B63B6; color: #FFFFFF; text-decoration: none; font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 12px;">
+        Ver mi inscripción
+    </a>
+</div>
+<p style="margin: 24px 0 0; font-size: 12px; line-height: 1.5; color: #3E5367;">
+    Si el botón no funciona, copia y pega este enlace personal en tu navegador:<br />
+    <a href="{{ personal_link }}" style="color: #0B63B6; word-break: break-all;">{{ personal_link }}</a>
+</p>

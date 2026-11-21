@@ -1,0 +1,7 @@
+¡Pago aprobado, {{ participant_name }}!
+
+Tu pago para {{ event_title }} fue verificado y tu inscripción está APROBADA.
+Código de inscripción: {{ registration_code }}
+
+Puedes consultar el detalle de tu inscripción desde tu enlace personal:
+{{ personal_link }}

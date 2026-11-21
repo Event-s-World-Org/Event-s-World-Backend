@@ -1,0 +1,8 @@
+Hola, {{ participant_name }}
+
+El organizador actualizó los datos de tu inscripción ({{ registration_code }}) para {{ event_title }}.
+Motivo del cambio: {{ reason }}
+Detalle: {{ summary }}
+
+Puedes verificar tus datos actualizados en tu enlace personal:
+{{ personal_link }}

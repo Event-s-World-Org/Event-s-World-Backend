@@ -1,0 +1,26 @@
+<h2 style="margin: 0 0 16px; font-size: 23px; line-height: 1.25; color: #0E1B2A; font-weight: 700;">Hola, {{ participant_name }}</h2>
+<p style="margin: 0 0 16px; font-size: 16px; line-height: 1.55; color: #3E5367;">
+    El organizador revisó el comprobante de tu inscripción (<strong style="color: #0E1B2A;">{{ registration_code }}</strong>) para <strong style="color: #0E1B2A;">{{ event_title }}</strong> y registró una observación:
+</p>
+<div style="background-color: #EDE9FE; border-left: 4px solid #5B21B6; padding: 14px 16px; border-radius: 6px; margin: 20px 0;">
+    <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #5B21B6;">
+        <strong>En observación:</strong> {{ reason }}
+    </p>
+</div>
+{{ if deadline != "" }}
+<p style="margin: 0 0 16px; font-size: 14px; color: #5B21B6;">
+    <strong>Fecha límite para subir un nuevo comprobante:</strong> {{ deadline }}
+</p>
+{{ end }}
+<p style="margin: 0 0 24px; font-size: 16px; line-height: 1.55; color: #3E5367;">
+    Ingresa a tu enlace personal para subir un nuevo comprobante legible y mantener tu cupo:
+</p>
+<div style="text-align: center; margin: 28px 0;">
+    <a class="ew-btn" href="{{ personal_link }}" style="display: inline-block; background-color: #0B63B6; color: #FFFFFF; text-decoration: none; font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 12px;">
+        Subir nuevo comprobante
+    </a>
+</div>
+<p style="margin: 24px 0 0; font-size: 12px; line-height: 1.5; color: #3E5367;">
+    Enlace personal:<br />
+    <a href="{{ personal_link }}" style="color: #0B63B6; word-break: break-all;">{{ personal_link }}</a>
+</p>

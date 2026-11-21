@@ -1,0 +1,6 @@
+Hola, {{ organizer_name }}
+
+Tu evento {{ event_title }} ha sido reactivado por la administración de la plataforma y vuelve a estar disponible.
+
+Panel del evento:
+{{ manage_event_link }}

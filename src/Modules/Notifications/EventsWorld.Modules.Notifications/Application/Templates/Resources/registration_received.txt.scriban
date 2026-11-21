@@ -1,0 +1,9 @@
+¡Hola, {{ participant_name }}!
+
+Hemos recibido tu solicitud de inscripción para: {{ event_title }}.
+Código de inscripción: {{ registration_code }}
+
+Puedes consultar los detalles y el estado de tu inscripción desde tu enlace personal:
+{{ personal_link }}
+
+Si no realizaste esta inscripción, puedes ignorar este correo.

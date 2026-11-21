@@ -1,0 +1,8 @@
+Hola, {{ participant_name }}
+
+Solicitaste recuperar los enlaces personales de tus inscripciones activas en Event's World:
+{{ for item in registrations }}
+- {{ item.event_title }} (Código de inscripción: {{ item.registration_code }})
+  Enlace personal: {{ item.personal_link }}
+{{ end }}
+Si no solicitaste recuperar tus enlaces personales, puedes ignorar este mensaje.

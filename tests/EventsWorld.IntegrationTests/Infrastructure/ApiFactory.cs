@@ -10,10 +10,15 @@ namespace EventsWorld.IntegrationTests.Infrastructure;
 /// <summary>
 /// In-memory API host for integration tests (Development environment), with optional configuration
 /// overrides and the test-only endpoints of <see cref="TestEndpoints"/>.
+/// Disables the background outbox worker by default so tests can trigger outbox processing deterministically.
 /// </summary>
 public sealed class ApiFactory : WebApplicationFactory<Program>
 {
-    private readonly Dictionary<string, string?> _settings = [];
+    private readonly Dictionary<string, string?> _settings = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Notifications:WorkerEnabled"] = "false",
+        ["Resend:Provider"] = "Development",
+    };
 
     public ApiFactory WithSetting(string key, string? value)
     {

@@ -1,0 +1,7 @@
+Hola, {{ organizer_name }}
+
+El código QR de pago de tu evento {{ event_title }} venció el {{ expired_date }}.
+Las inscripciones en línea se han pausado automáticamente hasta que subas un nuevo código QR vigente.
+
+Actualiza el QR de pago en el panel del evento:
+{{ manage_event_link }}

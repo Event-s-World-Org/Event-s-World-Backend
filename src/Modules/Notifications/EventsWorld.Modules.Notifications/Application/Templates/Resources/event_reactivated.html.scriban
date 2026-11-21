@@ -1,0 +1,18 @@
+<h2 style="margin: 0 0 16px; font-size: 23px; line-height: 1.25; color: #0E1B2A; font-weight: 700;">Hola, {{ organizer_name }}</h2>
+<p style="margin: 0 0 16px; font-size: 16px; line-height: 1.55; color: #3E5367;">
+    Tu evento <strong style="color: #0E1B2A;">{{ event_title }}</strong> ha sido reactivado por la administración de la plataforma.
+</p>
+<div style="background-color: #DCFCE7; border-left: 4px solid #166534; padding: 14px 16px; border-radius: 6px; margin: 20px 0;">
+    <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #166534;">
+        <strong>Evento activo:</strong> El evento vuelve a estar visible y disponible según su estado de publicación.
+    </p>
+</div>
+<div style="text-align: center; margin: 28px 0;">
+    <a class="ew-btn" href="{{ manage_event_link }}" style="display: inline-block; background-color: #0B63B6; color: #FFFFFF; text-decoration: none; font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 12px;">
+        Ir al panel del evento
+    </a>
+</div>
+<p style="margin: 24px 0 0; font-size: 12px; line-height: 1.5; color: #3E5367;">
+    Enlace al panel del evento:<br />
+    <a href="{{ manage_event_link }}" style="color: #0B63B6; word-break: break-all;">{{ manage_event_link }}</a>
+</p>
